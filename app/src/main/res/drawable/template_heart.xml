@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Plantilla de contorno: corazón. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="300dp"
+    android:height="300dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#000000"
+        android:strokeWidth="3"
+        android:strokeLineJoin="round"
+        android:pathData="M50,88 C18,64 6,46 6,30 C6,16 17,8 29,8 C38,8 46,14 50,22 C54,14 62,8 71,8 C83,8 94,16 94,30 C94,46 82,64 50,88 Z" />
+</vector>

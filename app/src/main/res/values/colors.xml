@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="purple_500">#6200EE</color>
+    <color name="purple_700">#3700B3</color>
+    <color name="teal_200">#03DAC5</color>
+    <color name="teal_700">#018786</color>
+    <color name="brown">#8B4513</color>
+    <color name="pink">#FF69B4</color>
+
+    <!-- Playful kids palette -->
+    <color name="kids_bg_top">#FFF6D9</color>
+    <color name="kids_bg_bottom">#BDE8FF</color>
+    <color name="kids_title">#FF5A8C</color>
+    <color name="kids_title_shadow">#FFD166</color>
+    <color name="kids_subtitle">#5B6B8C</color>
+    <color name="text_on_card">#FFFFFF</color>
+    <color name="text_on_card_dim">#F5FFFFFF</color>
+
+    <!-- Per-module accent colors -->
+    <color name="card_coral">#FF6B6B</color>
+    <color name="card_coral_dark">#E8484F</color>
+    <color name="card_teal">#1FB6A6</color>
+    <color name="card_teal_dark">#0E8C7F</color>
+    <color name="card_violet">#7C6CF0</color>
+    <color name="card_violet_dark">#5A48D6</color>
+    <color name="card_sunny">#FFB13C</color>
+    <color name="card_sunny_dark">#F0911F</color>
+
+    <!-- Une los Puntos: colores del trazado (más vivos e infantiles) -->
+    <color name="trace_guide">#CBD7F2</color>        <!-- puntos sin recorrer -->
+    <color name="trace_guide_ring">#9DB2E8</color>   <!-- borde de los puntos guía -->
+    <color name="trace_visited">#3DD68C</color>      <!-- puntos ya recorridos -->
+    <color name="trace_active">#FF6B6B</color>       <!-- punto activo parpadeante -->
+    <color name="trace_line">#2E7BFF</color>         <!-- trazo del niño -->
+    <color name="trace_line_glow">#8FC0FF</color>    <!-- halo bajo el trazo -->
+    <color name="trace_arrow">#5A48D6</color>        <!-- flechas de dirección -->
+
+    <!-- Une los Puntos: paleta rotativa para las fichas de número/letra -->
+    <color name="tile_1">#FF6B6B</color>
+    <color name="tile_2">#FFB13C</color>
+    <color name="tile_3">#3DD68C</color>
+    <color name="tile_4">#1FB6A6</color>
+    <color name="tile_5">#2E7BFF</color>
+    <color name="tile_6">#7C6CF0</color>
+</resources>

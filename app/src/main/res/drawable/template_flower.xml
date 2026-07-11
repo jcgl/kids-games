@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Plantilla de contorno: flor. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="300dp"
+    android:height="300dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#000000"
+        android:strokeWidth="3"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round"
+        android:pathData="M50,34 m-12,0 a12,12 0 1,0 24,0 a12,12 0 1,0 -24,0 M50,22 C40,4 22,8 26,24 C8,20 6,40 24,42 M50,22 C60,4 78,8 74,24 C92,20 94,40 76,42 M38,42 C20,52 26,72 42,62 M62,42 C80,52 74,72 58,62 M50,46 L50,92 M50,70 C40,66 30,74 34,84 M50,76 C60,72 70,80 66,90" />
+</vector>

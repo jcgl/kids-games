@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Plantilla de contorno: estrella. Dibujo lineal negro sobre fondo transparente,
+     pensado para colorear por debajo de las líneas. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="300dp"
+    android:height="300dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#000000"
+        android:strokeWidth="3"
+        android:strokeLineJoin="round"
+        android:pathData="M50,6 L61,38 L95,38 L67,58 L78,90 L50,70 L22,90 L33,58 L5,38 L39,38 Z" />
+</vector>

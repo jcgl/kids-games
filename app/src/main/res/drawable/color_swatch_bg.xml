@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Botón circular gigante de color para la paleta lateral. El color real se
+     aplica con android:backgroundTint en cada botón. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#FFFFFF" />
+    <stroke android:width="3dp" android:color="#33000000" />
+</shape>

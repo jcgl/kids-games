@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/menu_bg"
+    android:padding="14dp"
+    tools:context=".ColoringActivity">
+
+    <!-- Encabezado: título juguetón + barra de herramientas en una pastilla flotante. -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/coloring_toolbar_bg"
+        android:paddingStart="18dp"
+        android:paddingEnd="10dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:layout_marginBottom="10dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="🎨 ¡A Colorear!"
+            android:textColor="@color/kids_title"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:shadowColor="@color/kids_title_shadow"
+            android:shadowDx="0"
+            android:shadowDy="2"
+            android:shadowRadius="4" />
+
+        <ImageButton
+            android:id="@+id/btnZoomIn"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/toolbar_button_bg"
+            android:padding="10dp"
+            android:src="@drawable/ic_zoom_in"
+            android:contentDescription="Acercar" />
+
+        <ImageButton
+            android:id="@+id/btnZoomOut"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/toolbar_button_bg"
+            android:padding="10dp"
+            android:src="@drawable/ic_zoom_out"
+            android:contentDescription="Alejar" />
+
+        <ImageButton
+            android:id="@+id/btnReset"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/toolbar_button_bg"
+            android:padding="10dp"
+            android:src="@drawable/ic_reset"
+            android:contentDescription="Reiniciar dibujo" />
+
+        <ImageButton
+            android:id="@+id/btnSave"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/toolbar_button_bg"
+            android:padding="10dp"
+            android:src="@drawable/ic_save"
+            android:contentDescription="Guardar en la nevera" />
+
+        <ImageButton
+            android:id="@+id/btnLock"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/toolbar_button_bg"
+            android:padding="10dp"
+            android:src="@drawable/ic_lock_open"
+            android:contentDescription="Candado anti-errores (mantén 3 segundos para desbloquear)" />
+    </LinearLayout>
+
+    <!-- Selector de plantillas en forma de chips de colores. -->
+    <HorizontalScrollView
+        android:id="@+id/templatePicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/templateRow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp" />
+    </HorizontalScrollView>
+
+    <!-- Cuerpo: Lienzo central tipo hoja de papel, con la paleta de colores debajo. -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- Lienzo Central enmarcado como hoja de papel. -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/canvas_paper_bg"
+            android:padding="6dp">
+
+            <com.example.kidsgames.ColoringView
+                android:id="@+id/coloringView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <!-- Flechas para mover el lienzo ampliado. Solo visibles cuando el
+                 zoom permite desplazarse más en esa dirección (ver
+                 ColoringActivity.updatePanButtonsVisibility). -->
+            <ImageButton
+                android:id="@+id/btnPanUp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="top|center_horizontal"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/pan_button_bg"
+                android:padding="12dp"
+                android:rotation="0"
+                android:src="@drawable/ic_arrow_triangle"
+                android:visibility="gone"
+                android:contentDescription="Mover el dibujo hacia arriba" />
+
+            <ImageButton
+                android:id="@+id/btnPanDown"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/pan_button_bg"
+                android:padding="12dp"
+                android:rotation="180"
+                android:src="@drawable/ic_arrow_triangle"
+                android:visibility="gone"
+                android:contentDescription="Mover el dibujo hacia abajo" />
+
+            <ImageButton
+                android:id="@+id/btnPanLeft"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/pan_button_bg"
+                android:padding="12dp"
+                android:rotation="270"
+                android:src="@drawable/ic_arrow_triangle"
+                android:visibility="gone"
+                android:contentDescription="Mover el dibujo hacia la izquierda" />
+
+            <ImageButton
+                android:id="@+id/btnPanRight"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/pan_button_bg"
+                android:padding="12dp"
+                android:rotation="90"
+                android:src="@drawable/ic_arrow_triangle"
+                android:visibility="gone"
+                android:contentDescription="Mover el dibujo hacia la derecha" />
+        </FrameLayout>
+
+        <!-- Paleta de Colores debajo del lienzo, en fila horizontal desplazable. -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/tools_panel_bg"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/colorPalette"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical" />
+        </HorizontalScrollView>
+    </LinearLayout>
+
+    <!-- Navegación inferior: pastilla redondeada. -->
+    <Button
+        android:id="@+id/btnHomeColoring"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/nav_button_bg"
+        android:backgroundTint="@color/card_violet"
+        android:text="🏠  Ir al inicio"
+        android:textColor="@color/text_on_card"
+        android:textStyle="bold"
+        android:textAllCaps="false"
+        android:stateListAnimator="@null"
+        android:elevation="4dp" />
+
+</LinearLayout>

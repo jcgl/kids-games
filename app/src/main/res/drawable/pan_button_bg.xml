@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fondo circular semitransparente para las flechas de mover el lienzo
+     ampliado; contrasta sobre cualquier color del dibujo debajo. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#992E2E4E" />
+</shape>

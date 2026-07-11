@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Plantilla de contorno: casa. Varias líneas para colorear por secciones. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="300dp"
+    android:height="300dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#000000"
+        android:strokeWidth="3"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round"
+        android:pathData="M10,46 L50,12 L90,46 M18,42 L18,88 L82,88 L82,42 M40,88 L40,60 L60,60 L60,88 M64,42 L64,58 L78,58 L78,42" />
+</vector>

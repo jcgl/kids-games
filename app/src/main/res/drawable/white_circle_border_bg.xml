@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Círculo blanco con borde negro: usado para el botón de pintar en blanco y el de deshacer. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@android:color/white" />
+    <stroke
+        android:width="3dp"
+        android:color="@color/black" />
+    <size android:width="66dp" android:height="66dp" />
+</shape>
