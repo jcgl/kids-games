@@ -6,11 +6,12 @@ plugins {
 android {
     namespace = "com.example.kidsgames"
     compileSdk = 34
+    version = "1.0.0"
 
     applicationVariants.all {
         outputs.all {
             (this as com.android.build.gradle.internal.api.BaseVariantOutputImpl)
-                .outputFileName = "kids-games.apk"
+                .outputFileName = "kids-games$version.apk"
         }
     }
 
