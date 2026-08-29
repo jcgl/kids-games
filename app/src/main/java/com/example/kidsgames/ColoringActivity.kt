@@ -43,6 +43,7 @@ class ColoringActivity : AppCompatActivity() {
 
     /** Plantillas disponibles: nombre visible + drawable de contorno. */
     private val templates = listOf(
+        "Bumpy" to R.drawable.template_bumpy,
         "Esqueleto" to R.drawable.template_esqueleto,
         "Bob" to R.drawable.template_bob,
         "Pocoyo" to R.drawable.template_pocoyo,
