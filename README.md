@@ -94,3 +94,32 @@ The app includes three interactive modules designed for children:
 
 Drawings can be saved to internal storage or external SD card.
 
+## Automatización: de Issue a Pull Request
+
+El repositorio resuelve issues automáticamente con Claude. **Cada vez que se abre un issue nuevo**, un GitHub Action analiza el proyecto, implementa el cambio y abre un PR listo para revisar.
+
+### Archivos
+
+- **`CLAUDE.md`** (raíz) — mapa del proyecto que Claude lee automáticamente: responsabilidad de cada archivo, componentes compartidos (`ModuleAdapter`, `colorToolsPanel`, `ColoringView`, `TraceView`…) y **reglas para no duplicar** código, pantallas, strings, colores ni drawables. Mantener este archivo al día es lo que evita trabajo redundante.
+- **`.github/workflows/claude-issue.yml`** — workflow disparado en `issues: [opened]`.
+
+### Qué hace al abrir un issue
+
+1. Lee `CLAUDE.md` y el código existente relacionado **antes** de escribir nada, y reutiliza lo que ya hay.
+2. Documenta la solución en un `.md` (estilo `AGREGAR_PLANTILLAS.md` / `SOLUCION_ESQUELETO.md`) y actualiza el `README.md` si el cambio afecta features.
+3. Implementa el código respetando convenciones y el idioma español de la UI.
+4. Crea la rama `claude/issue-<número>`, hace commit, abre un PR con `Closes #<número>` y comenta el enlace en el issue.
+
+**No compila ni ejecuta pruebas** (no hay emulador en CI). Las pruebas son manuales; si falta algo, se abre otro issue.
+
+### Configuración (una sola vez)
+
+1. **Secreto de autenticación** en *Settings → Secrets and variables → Actions*. Elige una opción:
+   - `CLAUDE_CODE_OAUTH_TOKEN` — token de la suscripción de Claude Code (`claude setup-token`). **Recomendada.**
+   - `ANTHROPIC_API_KEY` — API key de la consola de Anthropic. Si usas esta, ajusta la línea de auth en el workflow.
+2. **Permisos de Actions** en *Settings → Actions → General → Workflow permissions*: activar *Read and write permissions* y *Allow GitHub Actions to create and approve pull requests*.
+
+### Seguridad
+
+El cuerpo del issue es texto no confiable que alimenta el prompt, por eso el workflow solo corre para issues del dueño/colaboradores (guarda `if:` con `author_association`). Para permitir issues de cualquiera, eliminar esa línea `if:` del workflow.
+
