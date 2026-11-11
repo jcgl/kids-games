@@ -1,0 +1,79 @@
+name: Claude - Resolver Issue
+
+# Se dispara cada vez que se ABRE un issue nuevo.
+on:
+  issues:
+    types: [opened]
+
+# Permisos que necesita el GITHUB_TOKEN para crear la rama, abrir el PR y comentar.
+permissions:
+  contents: write        # crear/empujar la rama
+  pull-requests: write   # abrir el PR
+  issues: write          # comentar en el issue
+
+jobs:
+  resolver:
+    runs-on: ubuntu-latest
+
+    # Guarda de seguridad: el cuerpo del issue es texto no confiable (cualquiera que pueda
+    # abrir un issue influye en el prompt). Solo corre para el dueño/colaboradores del repo.
+    # Si quieres que corra para TODOS, borra esta línea `if:`.
+    if: contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # historial completo para poder crear ramas
+
+      - name: Claude resuelve el issue
+        uses: anthropics/claude-code-action@v1
+        with:
+          # --- Autenticación (elige UNA) ---
+          # Opción A (recomendada si usas tu suscripción de Claude Code):
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Opción B (API key de la consola de Anthropic): comenta la línea de arriba
+          # y descomenta la siguiente:
+          # anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+
+          prompt: |
+            Eres el ingeniero del repositorio ${{ github.repository }}.
+            Resuelve el issue #${{ github.event.issue.number }}.
+
+            TÍTULO: ${{ github.event.issue.title }}
+
+            DESCRIPCIÓN:
+            ${{ github.event.issue.body }}
+
+            Trabaja en este orden, en español:
+
+            1. CONTEXTO PRIMERO. Lee `CLAUDE.md` y explora el código existente
+               (Glob/Grep/Read) relacionado con el issue ANTES de escribir nada.
+               Sigue estrictamente las "Reglas para NO duplicar" de `CLAUDE.md`:
+               reutiliza Activities, vistas, `ModuleAdapter`, `colorToolsPanel`,
+               drawables, colores y strings que ya existan. No crees componentes,
+               pantallas ni funciones equivalentes a algo que ya está.
+
+            2. DOCUMENTA LA SOLUCIÓN. Antes o junto al código, escribe un documento
+               en español (en la raíz, p. ej. `SOLUCION_ISSUE_${{ github.event.issue.number }}.md`,
+               siguiendo el estilo de `AGREGAR_PLANTILLAS.md`/`SOLUCION_ESQUELETO.md`):
+               qué cambia, por qué, archivos tocados, qué se reutilizó y cómo verificarlo.
+               Si el cambio afecta features listadas en `README.md`, actualízalo también.
+
+            3. IMPLEMENTA. Realiza los cambios de código necesarios respetando las
+               convenciones de nombres y el idioma español en la UI.
+
+            4. ENTREGA.
+               - Crea la rama `claude/issue-${{ github.event.issue.number }}`.
+               - Haz commit (termina el mensaje con:
+                 Co-Authored-By: Claude <noreply@anthropic.com>).
+               - Empuja la rama y abre un PR con `gh pr create` cuyo cuerpo incluya
+                 `Closes #${{ github.event.issue.number }}` y un resumen de la solución.
+               - Comenta en el issue el enlace al PR.
+
+            IMPORTANTE: NO ejecutes build ni pruebas (no hay emulador en CI).
+            El usuario probará manualmente; si falta algo, abrirá otro issue.
+
+          # Herramientas permitidas: edición de archivos + git + apertura de PR.
+          claude_args: |
+            --allowedTools "Read,Write,Edit,Glob,Grep,Bash(git:*),Bash(gh pr create:*),Bash(gh issue comment:*),Bash(mkdir:*),Bash(ls:*)"
