@@ -29,7 +29,12 @@ jobs:
       - name: Claude resuelve el issue
         uses: anthropics/claude-code-action@v1
         with:
-          # --- Autenticación (elige UNA) ---
+          # Token de GitHub para crear la rama, el PR y comentar.
+          # Usar el GITHUB_TOKEN de Actions evita el flujo OIDC/GitHub App
+          # (que requeriría `id-token: write` y la app de Claude instalada).
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+          # --- Autenticación del modelo (elige UNA) ---
           # Opción A (recomendada si usas tu suscripción de Claude Code):
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           # Opción B (API key de la consola de Anthropic): comenta la línea de arriba
