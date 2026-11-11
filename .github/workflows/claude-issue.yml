@@ -1,9 +1,10 @@
 name: Claude - Resolver Issue
 
-# Se dispara cada vez que se ABRE un issue nuevo.
+# Se dispara al ABRIR un issue nuevo o al EDITARLO (título o cuerpo),
+# así puedes ajustar el mismo issue en vez de crear otro.
 on:
   issues:
-    types: [opened]
+    types: [opened, edited]
 
 # Permisos que necesita el GITHUB_TOKEN para crear la rama, abrir el PR y comentar.
 permissions:
