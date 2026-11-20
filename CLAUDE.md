@@ -1,75 +1,45 @@
-# CLAUDE.md — Contexto del proyecto Kids Games
+# CLAUDE.md
 
-> Este archivo lo lee Claude **automáticamente** al trabajar en el repo (CLI y GitHub Action).
-> Su objetivo es que cualquier cambio **reutilice** lo que ya existe y **no duplique** código,
-> componentes, pantallas, strings, colores ni drawables.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Qué es
+## Project
 
-App Android nativa en **Kotlin** para niños, con tres módulos de dibujo. UI 100% en **español**.
+KidsGames: a single-module Android app (Kotlin, Views/XML layouts, no Compose) for young children with three modules: **¡A Colorear!** (coloring templates), **Une los Puntos** (dot-to-dot tracing of numbers/letters), and **Pizarra Libre** (free drawing). UI text, docs, and commit messages are in Spanish.
 
-- `applicationId` / `namespace`: `com.example.kidsgames`
-- `minSdk` 24, `targetSdk`/`compileSdk` 34, Java/Kotlin **17**
-- Dependencias: AndroidX core-ktx, appcompat, **Material Components**, ConstraintLayout. No hay Jetpack Compose: todo es **Vistas + XML** (`findViewById`, `RecyclerView`, custom `View`).
+## Commands
 
-### Compilar (referencia — la Action NO compila; las pruebas las hace el usuario)
 ```bash
-./gradlew assembleDebug      # genera app/build/outputs/apk/debug/kids-games1.0.0.apk
-./gradlew installDebug       # instala en emulador/dispositivo
+./gradlew assembleDebug              # build debug APK
+./gradlew installDebug               # build + install on connected device/emulator
+./gradlew clean assembleDebug
 ```
 
-## Arquitectura — mapa de archivos
+- The APK filename is overridden in `app/build.gradle.kts` to `kids-games<version>.apk` (e.g. `app/build/outputs/apk/debug/kids-games1.0.0.apk`), not the default `app-debug.apk`.
+- Toolchain: AGP 8.2.1, Kotlin 1.9.10, JDK 17, compileSdk/targetSdk 34, minSdk 24.
+- There are no unit or instrumented tests in the repo (test dependencies are declared but `app/src/test` / `app/src/androidTest` don't exist). Changes are verified by building and exercising the app on an emulator.
 
-Código en `app/src/main/java/com/example/kidsgames/`:
+## Architecture
 
-| Archivo | Responsabilidad |
-|---|---|
-| `MainActivity.kt` | Menú principal. Define la **lista de módulos** (`ModuleItem`) y lanza cada Activity. Aquí se registra cualquier módulo nuevo. |
-| `ModuleItem` (data class en `MainActivity.kt`) | Modelo de una tarjeta del menú: `title, subtitle, icon(emoji), colorRes, activityClass`. |
-| `ModuleAdapter.kt` | `RecyclerView.Adapter` que pinta las tarjetas usando `module_card.xml`. **Reutilizar**, no crear otro adapter para listas de tarjetas. |
-| `ColoringActivity.kt` | Módulo **"Colorear"**. Dueño de la lista `templates` (plantillas), paleta de colores, toolbar (zoom/reset/save/lock) y exportación a JPEG. |
-| `ColoringView.kt` | Custom `View` del coloreo. Dibuja `fillBitmap` (trazos del niño) y **encima** `templateDrawable` → "capa inteligente". |
-| `PlaygroundActivity.kt` | Módulos **"Une los Puntos"** (trazado) y **"Pizarra Libre"** (dibujo libre). Ambos comparten el mismo `colorToolsPanel`. |
-| `TraceView.kt` | Custom `View` grande (~1000 líneas) para trazado guiado y modo libre/coloreo. Núcleo del dibujo punto-a-punto. |
-| `CreationsActivity.kt` | Galería "Mis Creaciones" (refrigerador virtual) con las imágenes guardadas. |
-| `TracingActivity.kt` / `CanvasActivity.kt` | Activities auxiliares/legadas. Revisar antes de ampliar para no crear flujos paralelos. |
+All code lives in `app/src/main/java/com/example/kidsgames/`.
 
-Recursos en `app/src/main/res/`:
-- `layout/` — un XML por pantalla (`activity_*.xml`) + `module_card.xml`.
-- `values/` — `strings.xml`, `colors.xml`, `themes.xml`.
-- `drawable/` — iconos y fondos vectoriales (`ic_*.xml`, `*_bg.xml`) y plantillas vectoriales (`template_star/heart/house/flower.xml`).
-- `drawable-nodpi/` — plantillas PNG de alta resolución (`template_*.png`) que **no** deben escalarse.
+- **`MainActivity`** shows a RecyclerView of `ModuleItem`s and launches each module's activity with a `moduleName` intent extra.
+- **Une los Puntos and Pizarra Libre share one activity**: both launch `PlaygroundActivity`, which branches on `moduleName == "Pizarra Libre"`. Both also share `TraceView` and the single `colorToolsPanel` in `activity_playground.xml`, so palette/tool changes affect both modules.
+  - `TraceView` (~1000 lines) handles glyph-to-dot-path generation, magnet tolerance, blinking active point, TTS feedback (Spanish locale), confetti, the "Dibujar" reveal, and coloring clipped to the glyph region. In free mode (`setFreeMode(true)`) it skips tracing and draws directly.
+  - Gotcha (previously caused a bug): `TraceView` state such as `coloringEnabled` depends on the view being measured; anything set in `onCreate` before layout must be re-applied in `onSizeChanged`.
+- **`ColoringActivity` + `ColoringView`** implement the coloring module. `ColoringView` keeps the child's strokes in a `fillBitmap` and draws the template drawable **on top** each frame ("smart trace layer"), so strokes always appear under the outline. It also owns zoom (1×–3×), arrow-button panning with clamping (`canPan*`/`clampTranslation`), lock state, and `exportBitmap()`.
+- **`CreationsActivity`** ("Mis Creaciones" fridge gallery) lists JPEGs saved to `filesDir/DibujosParaColorear`.
+- `CanvasActivity` and `TracingActivity` are legacy intermediate screens; the main menu no longer routes through them.
 
-Activities registradas en `app/src/main/AndroidManifest.xml` — toda Activity nueva debe declararse ahí.
+## Adding coloring templates
 
-## Reglas para NO duplicar (leer antes de implementar)
+See `AGREGAR_PLANTILLAS.md` for the full procedure. Key points:
+- Templates are registered in the `templates` list in `ColoringActivity.kt` as `"Nombre" to R.drawable.template_<nombre>`; the first entry is the default.
+- Raster templates go in `res/drawable-nodpi/template_<nombre>.png` and **must have a transparent background** (RGBA). An opaque white background covers the child's strokes because the template is drawn over `fillBitmap`. The doc includes a PIL script that turns near-white (>240) pixels transparent.
+- Vector templates (`template_star/heart/house/flower.xml`) live in `res/drawable/`.
+- `ColoringView.templateBounds()` preserves aspect ratio for non-square templates.
 
-1. **Busca primero.** Antes de crear una clase/pantalla/función, busca si ya existe algo equivalente (grep por nombre y por responsabilidad). Reutiliza o extiende.
-2. **Tarjetas de menú** → añade un `ModuleItem` en `MainActivity.kt` y, si hace falta, un color en `colors.xml`. No crees otro adapter ni otro layout de tarjeta: usa `ModuleAdapter` + `module_card.xml`.
-3. **Paleta de colores y herramientas de dibujo** → "Une los Puntos" y "Pizarra Libre" comparten `colorToolsPanel` en `PlaygroundActivity`/`activity_playground.xml`. Un cambio ahí aplica a ambos; no dupliques la paleta.
-4. **Coloreo** → la lógica vive en `ColoringView`; el cableado (plantillas, paleta, toolbar, guardado) en `ColoringActivity`. No reimplementes render de bitmap/trazos.
-5. **Plantillas de colorear** → sigue **`AGREGAR_PLANTILLAS.md`** al pie de la letra: PNG con **fondo transparente** (script PIL incluido) en `drawable-nodpi/template_<nombre>.png`, y registra la entrada en la lista `templates` de `ColoringActivity.kt`. Vectoriales van como `template_<nombre>.xml` en `drawable/`.
-6. **No hardcodear.** Textos → `strings.xml`; colores → `colors.xml`; iconos/fondos → drawables existentes (`ic_*`, `*_bg`). Reutiliza drawables antes de crear uno nuevo.
-7. **Sin eraser separado:** pintar de blanco es el borrador. No reintroduzcas un modo goma.
-8. **Idioma:** todo texto visible al usuario en **español**.
+## Project docs
 
-## Convenciones de nombres
-
-- Archivos de plantilla: `template_<nombre>.png|xml` (minúsculas, guion bajo). Recurso: `R.drawable.template_<nombre>`. Entrada en lista: `"<Nombre>" to R.drawable.template_<nombre>`.
-- Layouts: `activity_<pantalla>.xml`. Drawables: iconos `ic_<nombre>.xml`, fondos `<nombre>_bg.xml`.
-- Clases Kotlin en PascalCase; una Activity por pantalla, declarada en el manifest.
-
-## Documentación
-
-Hay docs en la raíz que se mantienen al día (en español): `README.md` (features y troubleshooting),
-`AGREGAR_PLANTILLAS.md` (guía de plantillas), `SOLUCION_ESQUELETO.md`, `kids-games.md`, `status-tasks.md`.
-Al resolver un issue, **documenta la solución** en el mismo estilo: qué se cambió, por qué, archivos tocados
-y cómo verificar. Si el cambio afecta features del `README.md`, actualízalo.
-
-## Flujo esperado al resolver un issue (GitHub Action)
-
-El usuario **prueba manualmente**; si algo falta, abre otro issue. Por eso, al resolver un issue:
-- Lee este archivo y el código existente relacionado **antes** de escribir nada.
-- Reutiliza componentes según las reglas de arriba.
-- Rama `claude/issue-<número>`, PR con `Closes #<número>`.
-- **No** ejecutes build ni pruebas; entrega código + documentación de la solución.
+- `kids-games.md`: the design spec (Spanish), with "implementation notes" sections recording how and why the implementation differs from the original plan. Keep it in sync when behavior changes.
+- `status-tasks.md`: a checklist of spec items marked implemented, pending, or partial. Known pending items: loading parent-provided templates from `/DibujosParaColorear/`, and honoring the internal/MicroSD storage selector (saves currently always go to app-internal storage).
+- `README.md`: feature overview plus a "Known Issues & Troubleshooting" log of resolved bugs.
