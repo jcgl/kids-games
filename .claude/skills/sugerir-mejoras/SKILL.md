@@ -28,8 +28,19 @@ Enfoque solicitado (puede venir vacío = revisión general): `$ARGUMENTS`
 ## Paso 2 — Reunir contexto
 
 - Lee `CLAUDE.md`, `status-tasks.md`, `kids-games.md` y la sección "Known Issues" de `README.md`.
-- Lee los reportes anteriores en `docs/mejoras/` (si existen) para **no repetir** sugerencias
-  ya hechas; si una sugerencia anterior sigue sin resolverse, menciónala como "pendiente de reporte previo".
+- Lee **todos** los reportes anteriores para **no repetir** sugerencias, aunque sus branches
+  no se hayan mergeado a `main`:
+  ```bash
+  ls docs/mejoras/ 2>/dev/null                       # reportes ya mergeados
+  for b in $(git branch --list 'mejoras/*' --format='%(refname:short)'); do
+    git ls-tree --name-only "$b" docs/mejoras/ 2>/dev/null | sed "s|^|$b: |"
+  done                                                # reportes en otras branches
+  ```
+  Lee cada reporte con `git show <branch>:<ruta>` (si un mismo reporte está en `main` y en su branch,
+  usa la versión más reciente). Según el **Estado** de cada sugerencia previa:
+  - `Rechazada` o `Implementada` → no la vuelvas a proponer ni la listes.
+  - `Pendiente` o `Aprobada` → verifica en el código si ya se resolvió; si no, inclúyela en
+    "Pendientes de reportes anteriores" (con la branch de origen) en vez de repetirla como nueva.
 - Revisa `git log --oneline -20` para ver qué cambió recientemente.
 - Lee el código relevante en `app/src/main/java/com/example/kidsgames/` y los layouts en
   `app/src/main/res/layout/`. Si hay enfoque, prioriza los archivos de ese módulo.
@@ -69,6 +80,7 @@ Branch: `mejoras/...` · Enfoque: <enfoque o "general">
 ## Sugerencias
 
 ### 1. <Título corto>
+- **Estado:** Pendiente
 - **Categoría:** <categoría>
 - **Impacto:** Alto | Medio | Bajo
 - **Esfuerzo:** Alto | Medio | Bajo
@@ -96,5 +108,10 @@ Muestra en el chat:
 - Las **5 sugerencias principales** en una tabla breve (título, impacto, esfuerzo).
 - Pregunta cuáles quiere implementar en esta branch.
 
-Si el usuario elige implementar alguna, hazlo en esta misma branch, verifica con
-`./gradlew assembleDebug`, y actualiza `status-tasks.md` / `kids-games.md` / `README.md` si cambia el comportamiento.
+No implementes nada hasta que el usuario lo solicite. Cuando responda:
+- Marca las elegidas como `Estado: Aprobada` y el resto como `Estado: Rechazada` en el reporte, y haz commit.
+  (El usuario puede mergear el reporte a `main` aunque no apruebe nada; las rechazadas quedan como registro.)
+- Si responde que no implementará ninguna, marca todas como `Rechazada` y haz commit.
+- Al implementar una aprobada, hazlo en esta misma branch, verifica con `./gradlew assembleDebug`,
+  cámbiala a `Estado: Implementada` y actualiza `status-tasks.md` / `kids-games.md` / `README.md`
+  si cambia el comportamiento.
